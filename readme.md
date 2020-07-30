@@ -1,7 +1,23 @@
 mvn package 编译
 
-payload来自雷石安全实验室的ShiroExploit，再次感谢雷石安全实验室，雷石安全实验室牛逼plus
+## changelog
+1. 新增shiro 检测方式(对，就是那个不需要gadget的检测方式) 2020.7.30
 
+## 检测方式
+运行
+```
+java -cp .\shiroPoc-1.0-SNAPSHOT-jar-with-dependencies.jar org.unicodesec.poc 
+```
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200730200713.png)
+
+
+检测
+
+```
+java -cp .\shiroPoc-1.0-SNAPSHOT-jar-with-dependencies.jar org.unicodesec.poc http://localhost:8080/sam
+ples_web_war/
+```
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200730200536.png)
 
 
 ## shiro-urldns 检测&利用工具
