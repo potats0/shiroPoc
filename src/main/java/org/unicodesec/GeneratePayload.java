@@ -2,8 +2,6 @@ package org.unicodesec;
 
 import yso.payloads.Serializer;
 import yso.payloads.Strings;
-import yso.payloads.annotation.ArgsType;
-import yso.payloads.annotation.Arguments;
 import yso.payloads.annotation.Authors;
 import yso.payloads.annotation.Dependencies;
 import yso.payloads.exploitType.EXP;
@@ -22,7 +20,7 @@ public class GeneratePayload {
                 " |_____/  |_| |_| |_| |_|     \\___/  |______|  \\___| |_| |_|  \\___/     |_|     \\___/   \\___/  |_| |___/\n" +
                 "                                                                                                        \n" +
                 "                                                                  Powered by UnicodeSec                 \n" +
-                "                                                                  Version  0.0.1                        ";
+                "                                                                  Version  0.0.2                        ";
         System.out.println(text);
         if (args.length == 0) {
             printUsage();
@@ -63,8 +61,10 @@ public class GeneratePayload {
 
     private static void printUsage() {
         System.err.println("Powered by UnicodeSec Potatso");
+        System.err.println("Exploit");
         System.err.println("Usage: java -jar shiroPoc-[version]-all.jar [keyindex] [payload] [回显服务器类型]");
-
+        System.err.println("Scan");
+        System.err.println("Usage: java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url]");
         System.err.println("  Available shiro key:");
 
         final List<String[]> rows = new LinkedList<String[]>();
@@ -119,14 +119,13 @@ public class GeneratePayload {
         Collections.sort(payloadClasses, new Strings.ToStringComparator()); // alphabetize
 
         final List<String[]> rows = new LinkedList<String[]>();
-        rows.add(new String[]{"Payload", "Authors", "Dependencies", "Arguments"});
-        rows.add(new String[]{"-------", "-------", "------------", "------------"});
+        rows.add(new String[]{"Payload", "Authors", "Dependencies"});
+        rows.add(new String[]{"-------", "-------", "------------"});
         for (Class<? extends EXP> payloadClass : payloadClasses) {
             rows.add(new String[]{
                     payloadClass.getSimpleName(),
                     Strings.join(Arrays.asList(Authors.Utils.getAuthors(payloadClass)), ", ", "@", ""),
                     Strings.join(Arrays.asList(Dependencies.Utils.getDependenciesSimple(payloadClass)), ", ", "", ""),
-                    Strings.join(Arrays.asList(Arguments.Utils.getArguments(payloadClass)), ", ", "", ""),
             });
         }
 
