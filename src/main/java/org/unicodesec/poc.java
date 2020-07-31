@@ -25,7 +25,7 @@ public class poc {
                 " |_____/  |_| |_| |_| |_|     \\___/  |______|  \\___| |_| |_|  \\___/     |_|     \\___/   \\___/  |_| |___/\n" +
                 "                                                                                                        \n" +
                 "                                                                  Powered by UnicodeSec                 \n" +
-                "                                                                  Version  0.0.2                        ";
+                "                                                                  Version  0.0.3                        ";
         System.out.println(text);
         if (args.length == 0) {
             System.out.println("java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url]");
@@ -70,6 +70,9 @@ public class poc {
                 }
                 if (isDeleteMe == false) {
                     System.out.println(String.format("found Shiro Vulnerability, Shiro key %s", keys.keys[i]));
+                    System.out.println(String.format("Shiro key index %s", i));
+                    System.out.println("use this command to exploit shiro:");
+                    System.out.println(String.format("\tjava -jar shiroPoc-[version]-all.jar keyIndex [payload] [exploit type]", i));
                     return;
                 }
             }
