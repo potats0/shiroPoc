@@ -20,7 +20,7 @@ public class GeneratePayload {
                 " |_____/  |_| |_| |_| |_|     \\___/  |______|  \\___| |_| |_|  \\___/     |_|     \\___/   \\___/  |_| |___/\n" +
                 "                                                                                                        \n" +
                 "                                                                  Powered by UnicodeSec                 \n" +
-                "                                                                  Version  0.0.2                        ";
+                "                                                                  Version  0.0.3                        ";
         System.out.println(text);
         if (args.length == 0) {
             printUsage();
