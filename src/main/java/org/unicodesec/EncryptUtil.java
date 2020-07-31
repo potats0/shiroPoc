@@ -67,7 +67,7 @@ public class EncryptUtil {
 
             // 查看数据块位数 默认为16（byte） * 8 =128 bit
 //            System.out.println("数据块位数(byte)：" + cipher.getBlockSize());
-            IvParameterSpec iv = new IvParameterSpec(pwdBytes);//使用CBC模式，需要一个向量iv，可增加加密算法的强度
+            IvParameterSpec iv = new IvParameterSpec("unicodeSecPotato".getBytes());//使用CBC模式，需要一个向量iv，可增加加密算法的强度
             // 3 初始化Cipher实例。设置执行模式以及加密密钥
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 
@@ -100,7 +100,8 @@ public class EncryptUtil {
         cipher = EncryptUtil.encrypt(objectBytes, pwd);
         assert cipher != null;
         byte[] output = new byte[pwd.length + cipher.length];
-        System.arraycopy(pwd, 0, output, 0, pwd.length);
+        byte[] iv = "unicodeSecPotato".getBytes();
+        System.arraycopy(iv, 0, output, 0, iv.length);
         System.arraycopy(cipher, 0, output, pwd.length, cipher.length);
         return Base64.encode(output);
     }
