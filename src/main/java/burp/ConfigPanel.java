@@ -27,7 +27,7 @@ public class ConfigPanel extends JDialog {
     private final JComboBox jcShiroKeys = new JComboBox();
 
     private final JCheckBox cbProvideKey = new JCheckBox("provide Keys");
-    private final JTextField jtkey = new JTextField(Config.getshiroKey());
+    private final JTextField jtkey = new JTextField("kPH+bIxk5D2deZiIxcaaaA==");
     private final JLabel jlGadges = new JLabel("avaliable Gadgets");
     private final JComboBox jcGadgets = new JComboBox();
 
