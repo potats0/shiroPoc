@@ -22,12 +22,12 @@ public class ConfigPanel extends JDialog {
     private final JPanel topPanel = new JPanel();
     private final JPanel centerPanel = new JPanel();
     private final JPanel bottomPanel = new JPanel();
-    ;
+
     private final JCheckBox cbBuiltInKeys = new JCheckBox("Built in Keys");
     private final JComboBox jcShiroKeys = new JComboBox();
 
     private final JCheckBox cbProvideKey = new JCheckBox("provide Keys");
-    private final JTextField jtkey = new JTextField("kPH+bIxk5D2deZiIxcaaaA==");
+    private final JTextField jtkey = new JTextField(Config.getshiroKey());
     private final JLabel jlGadges = new JLabel("avaliable Gadgets");
     private final JComboBox jcGadgets = new JComboBox();
 
@@ -41,7 +41,6 @@ public class ConfigPanel extends JDialog {
     public ConfigPanel() {
         initGUI();
         initEvent();
-        initValue();
         this.setTitle("Generate shiro Payload config");
     }
 
@@ -125,25 +124,6 @@ public class ConfigPanel extends JDialog {
                 }
             }
         });
-//
-//        cbComment.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                if(cbComment.isSelected()){
-//                    lbCommentLen.setEnabled(true);
-//                    spMinCommentLen.setEnabled(true);
-//                    lbCommentLenRangeSymbols.setEnabled(true);
-//                    spMaxCommentLen.setEnabled(true);
-//                    lbCommentLenRange.setEnabled(true);
-//                }else{
-//                    lbCommentLen.setEnabled(false);
-//                    spMinCommentLen.setEnabled(false);
-//                    lbCommentLenRangeSymbols.setEnabled(false);
-//                    spMaxCommentLen.setEnabled(false);
-//                    lbCommentLenRange.setEnabled(false);
-//                }
-//            }
-//        });
 
         btCancel.addActionListener(new ActionListener() {
             @Override
@@ -162,7 +142,6 @@ public class ConfigPanel extends JDialog {
                     shiroKey = jtkey.getText().trim();
                 }
                 if (Base64.decode(shiroKey).length != 16) {
-                    System.out.println("密钥长度错误，aes加密中，密钥长度为16位");
                     JOptionPane.showConfirmDialog(ConfigPanel.this, String.format("Aes length must be 16bit, but Key length is %d", Base64.decode(shiroKey).length), "Warning", JOptionPane.CLOSED_OPTION, JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -174,13 +153,4 @@ public class ConfigPanel extends JDialog {
         });
     }
 
-
-    /**
-     * 为控件赋值
-     */
-    public void initValue() {
-//        spMinChunkedLen.setValue(Config.getshiroKey());
-//        spMaxChunkedLen.setValue(Config.getpayloadType());
-//        cbComment.setSelected(Config.getexploitType());
-    }
 }

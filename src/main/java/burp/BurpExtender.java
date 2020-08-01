@@ -6,7 +6,7 @@ public class BurpExtender implements IBurpExtender,IHttpListener,IProxyListener 
     public static IBurpExtenderCallbacks callbacks;
     public static IExtensionHelpers helpers;
     private String extensionName = "Shiro Echo Tool";
-    private String version ="0.0.1";
+    private String version ="0.0.4";
     public static PrintWriter stdout;
     public static PrintWriter stderr;
 

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class GeneratePayload {
     /**
-     * 对请求包进行chunked编码
+     * 对请求包添加cookie rememberMe
      *
      * @param requestResponse 要处理的请求响应对象
      * @return 编码后的请求包

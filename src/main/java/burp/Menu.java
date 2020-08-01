@@ -3,7 +3,6 @@ package burp;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,34 +25,6 @@ public class Menu implements IContextMenuFactory {
             payload.setEnabled(false);
         }
 
-//        config.addActionListener(new ActionListener(){
-//
-//            public void actionPerformed(ActionEvent arg0) {
-//                IHttpRequestResponse iReqResp = invocation.getSelectedMessages()[0];
-//                IRequestInfo reqInfo = BurpExtender.helpers.analyzeRequest(iReqResp.getRequest());
-//                // 不对GET请求进行编码
-//                if(!reqInfo.getMethod().equals("POST")){
-//                    JOptionPane.showConfirmDialog(null,"GET requests cannot be chunked encoded！","Warning",JOptionPane.CLOSED_OPTION,JOptionPane.WARNING_MESSAGE);
-//                    return;
-//                }
-//
-//                // 不重复编码
-//                if(Transfer.isChunked(iReqResp)){
-//                    JOptionPane.showConfirmDialog(null,"The request has been chunked encoded，Do not repeat the encoding！","Warning",JOptionPane.CLOSED_OPTION,JOptionPane.WARNING_MESSAGE);
-//                    return;
-//                }
-//
-//                try {
-//                    byte[] request = Transfer.encoding(iReqResp, Config.getMin_chunked_len(),Config.getMax_chunked_len(),Config.isAddComment(),Config.getMin_comment_len(),Config.getMax_comment_len());
-//                    if (request != null) {
-//                        iReqResp.setRequest(request);
-//                    }
-//                } catch (Exception e) {
-//                    BurpExtender.stderr.println(e.getMessage());
-//                }
-//            }
-//        });
-
         payload.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent arg0) {
@@ -63,21 +34,6 @@ public class Menu implements IContextMenuFactory {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-//
-//                // 进制对未编码请求解码
-//                if(!Transfer.isChunked(iReqResp)){
-//                    JOptionPane.showConfirmDialog(null,"The request is unencoded and cannot be decoded!","Warning",JOptionPane.CLOSED_OPTION,JOptionPane.WARNING_MESSAGE);
-//                    return;
-//                }
-//
-//                try {
-//                    byte[] request = Transfer.decoding(iReqResp);
-//                    if (request != null) {
-//                        iReqResp.setRequest(request);
-//                    }
-//                } catch (Exception e) {
-//                    BurpExtender.stderr.println(e.getMessage());
-//                }
             }
         });
 
