@@ -4,6 +4,22 @@ mvn package 编译
 1. 新增shiro 检测方式(对，就是那个不需要gadget的检测方式) 2020.7.30
 2. 新增shiro 100 key
 3. 支持自定义key
+4. 支持作为插件导入burp
+
+## burp插件使用方法
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200801160819.png)
+
+repeater界面中右键，生成payload
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200801160932.png)
+默认kph密钥，cc2利用链，获取信息，如果需要修改，请右键选择config
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200801161039.png)
+
+生成后，会自动替换request内容，并攻击
+
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200801161129.png)
+
+
+当然，这个jar包也可以直接在命令行下运行，生成rememberMe，或者检测，一切不变
 
 自定义key检测
 ```
