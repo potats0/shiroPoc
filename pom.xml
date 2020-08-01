@@ -6,7 +6,7 @@
 
   <groupId>org.unicodesec</groupId>
   <artifactId>shiroPoc</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
 
   <name>shiroPoc</name>
   <!-- FIXME change it to the project's website -->
@@ -96,6 +96,12 @@
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-core</artifactId>
       <version>1.5.1</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/net.portswigger.burp.extender/burp-extender-api -->
+    <dependency>
+      <groupId>net.portswigger.burp.extender</groupId>
+      <artifactId>burp-extender-api</artifactId>
+      <version>1.7.22</version>
     </dependency>
   </dependencies>
 
