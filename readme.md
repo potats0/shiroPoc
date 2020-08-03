@@ -1,6 +1,7 @@
 mvn package 编译
 
 ## 欢迎关注 宽字节安全 公众号
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//imgWeChat%20Image_20200612150038.png)
 ## changelog
 1. 新增shiro 检测方式(对，就是那个不需要gadget的检测方式) 2020.7.30
 2. 新增shiro 100 key
