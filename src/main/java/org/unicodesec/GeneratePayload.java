@@ -13,16 +13,7 @@ import java.util.*;
 public class GeneratePayload {
 
     public static void main(String[] args) {
-        String text = "   _____   _       _                  ______          _               _______                   _       \n" +
-                "  / ____| | |     (_)                |  ____|        | |             |__   __|                 | |      \n" +
-                " | (___   | |__    _   _ __    ___   | |__      ___  | |__     ___      | |      ___     ___   | |  ___ \n" +
-                "  \\___ \\  | '_ \\  | | | '__|  / _ \\  |  __|    / __| | '_ \\   / _ \\     | |     / _ \\   / _ \\  | | / __|\n" +
-                "  ____) | | | | | | | | |    | (_) | | |____  | (__  | | | | | (_) |    | |    | (_) | | (_) | | | \\__ \\\n" +
-                " |_____/  |_| |_| |_| |_|     \\___/  |______|  \\___| |_| |_|  \\___/     |_|     \\___/   \\___/  |_| |___/\n" +
-                "                                                                                                        \n" +
-                "                                                                  Powered by UnicodeSec                 \n" +
-                "                                                                  Version  0.0.3                        ";
-        System.out.println(text);
+        System.out.println(Version.text);
         if (args.length == 0) {
             printUsage();
             return;
