@@ -7,6 +7,15 @@ mvn package 编译
 2. 新增shiro 100 key
 3. 支持自定义key
 4. 支持作为插件导入burp
+6. 支持burp的被动扫描（需要burp pro版本
+
+## 被动扫描演示
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200806125336.png)
+##### 检测到shiro框架
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200806124314.png)
+
+##### 自动探测shiro的key
+![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200806124243.png)
 
 ## burp插件使用方法
 ![](https://potatso-1253210846.cos.ap-beijing.myqcloud.com//img20200801160819.png)
